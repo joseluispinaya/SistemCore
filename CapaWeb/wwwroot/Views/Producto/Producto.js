@@ -11,7 +11,7 @@ $(function () {
     tablaData = $('#tbData').DataTable({
         responsive: true,
         "ajax": {
-            "url": `/${controlador}/Lista`,
+            "url": `/${controlador}/ListaProducDto`,
             "type": "GET",
             "datatype": "json"
         },
@@ -19,20 +19,17 @@ $(function () {
             { "data": "idProducto", "visible": false, "searchable": false },
             {
                 title: "Imagen",
-                data: "imageFull",
-                width: "80px",
+                "data": "imageFull",
+                "orderable": false,
+                "searchable": false,
                 render: function (data) {
-                    return `<img src="${data}" class="rounded mx-auto d-block" style="max-width: 40px; max-height: 40px; border-radius: 8px" />`;
+                    return `<img src="${data}" class="rounded mx-auto d-block" style="max-width: 40px; max-height: 40px" />`;
                 }
             },
             { title: "Nombre", "data": "nombre" },
             { title: "Pre Compra", "data": "precioCompra" },
             { title: "Pre Venta", "data": "precioVenta" },
-            {
-                title: "Categoria", "data": "categoria", render: function (data) {
-                    return data.nombre
-                }
-            },
+            { title: "Categoria", "data": "nombreCategoria" },
             { title: "Cantidad", "data": "cantidad" },
             {
                 title: "Acciones",
@@ -91,10 +88,11 @@ $('#tbData tbody').on('click', '.btn-editar', function () {
     }
 
     let data = tablaData.row(fila).data();
+    //console.log("Detalless:", data);
 
     idEditar = data.idProducto;
     $("#txtNombre").val(data.nombre);
-    $("#cboCategoria").val(data.categoria.idCategoria.toString()).trigger("change");
+    $("#cboCategoria").val(data.idCategoria.toString()).trigger("change");
     $("#txtDescripcion").val(data.descripcion);
     $("#txtCantidad").val(data.cantidad);
     $("#txtCompra").val(data.precioCompra);
@@ -103,9 +101,8 @@ $('#tbData tbody').on('click', '.btn-editar', function () {
     $("#txtImagenPro").val(data.imagenPro);
     $("#txtImagen").val("");
     $(".custom-file-label").text('Ningún archivo seleccionado');
-    $("#myLargeModalLabel").text("Editar Producto");
 
-    //swal("Mensaje", data.nombre, "success");
+    $("#myLargeModalLabel").text("Editar Producto");
     $(`#${modal}`).modal('show');
 
 });
@@ -162,7 +159,7 @@ $("#btnNuevo").on("click", function () {
     $("#txtNombre").val("");
     $("#cboCategoria").val("").trigger('change');
     $("#txtDescripcion").val("");
-    $("#txtCantidad").val("");
+    $("#txtCantidad").val("0");
     $("#txtCompra").val("");
     $("#txtVenta").val("");
     $("#imgProducto").attr("src", "/images/sinimagen.png");
@@ -175,6 +172,143 @@ $("#btnNuevo").on("click", function () {
     $(`#${modal}`).modal('show');
 })
 
+function habilitarBoton() {
+    $('#btnGuardar').prop('disabled', false);
+}
+
+$("#btnGuardar").on("click", function () {
+
+    $('#btnGuardar').prop('disabled', true);
+
+    const inputs = $("input.model").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() === "");
+
+    if (inputs_sin_valor.length > 0) {
+        const mensaje = `Debe completar el campo : "${inputs_sin_valor[0].name}"`;
+        toastr.warning("", mensaje);
+        //$(`input[name="${inputs_sin_valor[0].name}"]`).focus();
+        $(`input[name="${inputs_sin_valor[0].name}"]`).trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    if ($("#cboCategoria").val() === "") {
+        toastr.warning("", "Debe Seleccionar una categoria");
+        habilitarBoton();
+        return;
+    }
+
+    if ($("#txtDescripcion").val().trim() === "") {
+        toastr.warning("", "Debe ingresar una Descripcion");
+        $("#txtDescripcion").trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    let cantidadStr = $("#txtCantidad").val().trim();
+
+    // Verificar si la cantidad es un número válido, no vacío
+    if (cantidadStr === "" || isNaN(cantidadStr) || parseInt(cantidadStr) < 0) {
+        toastr.warning("", "Debe ingresar una cantidad válida (positivo o use 0)");
+        $("#txtCantidad").trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    const fileInput = document.getElementById('txtImagen');
+    let precioCompraStr = $("#txtCompra").val().trim();
+    let precioVentaStr = $("#txtVenta").val().trim();
+
+    // Verificar si el precio compra es un número válido, no vacío, y mayor que 0
+    if (precioCompraStr === "" || isNaN(precioCompraStr) || parseFloat(precioCompraStr) <= 0) {
+        toastr.warning("", "Debe ingresar un monto de compra válido (mayor a 0)");
+        $("#txtCompra").trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    // Verificar si el precio venta es un número válido, no vacío, y mayor que 0
+    if (precioVentaStr === "" || isNaN(precioVentaStr) || parseFloat(precioVentaStr) <= 0) {
+        toastr.warning("", "Debe ingresar un monto de venta válido (mayor a 0)");
+        $("#txtVenta").trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    const precioCompra = Number(parseFloat(precioCompraStr).toFixed(2));
+    const precioVenta = Number(parseFloat(precioVentaStr).toFixed(2));
+
+    let modelo = {
+        IdProducto: idEditar,
+        Nombre: $("#txtNombre").val().trim(),
+        Descripcion: $("#txtDescripcion").val().trim(),
+        PrecioCompra: precioCompra,
+        PrecioVenta: precioVenta,
+        Cantidad: parseInt(cantidadStr),
+        IdCategoria: $("#cboCategoria").val()
+        //ImagenPro: $("#txtImagenPro").val().trim()
+    }
+
+    const formData = new FormData();
+    //formData.append("foto", fileInput.files[0]);
+
+    if (fileInput.files.length > 0) {
+        formData.append("foto", fileInput.files[0]);
+    }
+
+    formData.append("modelo", JSON.stringify(modelo));
+
+    $(`#${modal}`).find("div.modal-content").LoadingOverlay("show");
+
+    if (idEditar != 0) {
+
+        fetch(`/${controlador}/Editar`, {
+            method: "PUT",
+            body: formData
+        })
+            .then(response => response.ok ? response.json() : Promise.reject(response))
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    swal("Mensaje", responseJson.mensaje, "success");
+                    $(`#${modal}`).modal('hide');
+                    idEditar = 0;
+                    tablaData.ajax.reload();
+                } else {
+                    swal("Error!", responseJson.mensaje, "warning");
+                }
+            })
+            .catch(() => {
+                swal("Error!", "No se pudo editar.", "warning");
+            })
+            .finally(() => {
+                // finally se ejecuta siempre (success o catch)
+                $(`#${modal}`).find("div.modal-content").LoadingOverlay("hide");
+                habilitarBoton();
+            });
+    } else {
+        fetch(`/${controlador}/Guardar`, {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.ok ? response.json() : Promise.reject(response))
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    swal("Mensaje", responseJson.mensaje, "success");
+                    $(`#${modal}`).modal('hide');
+                    tablaData.ajax.reload();
+                } else {
+                    swal("Error!", responseJson.mensaje, "warning");
+                }
+            })
+            .catch(() => {
+                swal("Error!", "No se pudo registrar.", "warning");
+            })
+            .finally(() => {
+                $(`#${modal}`).find("div.modal-content").LoadingOverlay("hide");
+                habilitarBoton();
+            });
+    }
+});
 
 
 //fin

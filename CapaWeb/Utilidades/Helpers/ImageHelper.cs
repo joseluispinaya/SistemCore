@@ -6,23 +6,34 @@ namespace CapaWeb.Utilidades.Helpers
 
         public async Task<string> UploadImageAsync(IFormFile imageFile, string folder)
         {
-            var guid = Guid.NewGuid().ToString();
-            var fileName = $"{guid}{Path.GetExtension(imageFile.FileName)}";
-
-            // wwwroot + folder
-            var path = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                folder,
-                fileName
-            );
-
-            using (var stream = new FileStream(path, FileMode.Create))
+            try
             {
-                await imageFile.CopyToAsync(stream);
-            }
+                var guid = Guid.NewGuid().ToString();
+                var fileName = $"{guid}{Path.GetExtension(imageFile.FileName)}";
 
-            return $"/{folder}/{fileName}";
+                var path = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    folder,
+                    fileName
+                );
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                // Verificar que realmente se creó el archivo
+                if (File.Exists(path))
+                    return $"/{folder}/{fileName}";
+
+                return string.Empty; // no se pudo guardar
+            }
+            catch
+            {
+                // En caso de cualquier excepción
+                return string.Empty;
+            }
         }
 
         public string UploadImage(byte[] pictureArray, string folder)
