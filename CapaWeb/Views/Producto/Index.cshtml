@@ -12,6 +12,7 @@
     <link href="~/assets/plugins/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="~/assets/plugins/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/pluginzero/select2/select2.min.css" rel="stylesheet" />
 }
 
 <div class="row">
@@ -20,29 +21,22 @@
             <div class="card-header bg-primary d-flex justify-content-between align-items-center">
                 <h3 class="card-title m-0"><i class="fas fa-user-friends"></i> Lista de productos</h3>
                 <button type="button" id="btnNuevo" class="btn btn-sm btn-success">
-                    <i class="fas fa-user-plus"></i> Nuevo Registro
+                    <i class="fas fa-user-plus"></i> Nuevo Producto
                 </button>
             </div>
             <div class="card-body">
                 <div class="row">
+                    <div class="col-sm-3">
+                        <button class="btn btn-sm btn-success" id="btnNuevodo"><i class="fas fa-user-plus"></i> Nuevo Producto</button>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
                     <div class="col-lg-12 col-sm-12 col-12">
-
-                        <table id="tbData" class="table table-striped table-bordered nowrap" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Foto</th>
-                                    <th>Categoria</th>
-                                    <th>Nombre</th>
-                                    <th>Pre Venta</th>
-                                    <th>Pre Compra</th>
-                                    <th>Stock</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
+                        <table class="table table-striped table-bordered nowrap" id="tbData" cellspacing="0" width="100%">
+                            <tbody></tbody>
                         </table>
+
                     </div>
                 </div>
             </div>
@@ -59,71 +53,60 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
-                <input id="txtIdProduc" name="IdProducto" value="0" type="hidden" />
+                <input id="txtImagenPro" type="hidden" />
                 <div class="row">
-                    <div class="col-lg-7">
+                    <div class="col-lg-6">
                         <div class="form-row">
-                            <div class="form-group col-sm-6">
+                            <div class="form-group col-sm-7">
                                 <label for="txtNombre">Nombre</label>
                                 <input type="text" class="form-control input-sm model" id="txtNombre" name="Nombre" autocomplete="off">
                             </div>
-                            <div class="form-group col-sm-6">
-                                <label for="txtMarca">Marca</label>
-                                <input type="text" class="form-control input-sm model" id="txtMarca" name="Marca" autocomplete="off">
+                            <div class="form-group col-sm-5">
+                                <label for="cboCategoria">Categoria</label>
+                                <select id="cboCategoria" class="form-control form-control-sm" data-width="100%"></select>
                             </div>
 
+                            
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-sm-8">
-                                <label for="cboCatego">Categoria</label>
-                                <select class="form-control form-control-sm" id="cboCatego">
-                                </select>
+                            <div class="form-group col-sm-4">
+                                <label for="txtCantidad">Cantidad</label>
+                                <input type="number" class="form-control input-sm" id="txtCantidad" name="Cantidad">
                             </div>
                             <div class="form-group col-sm-4">
-                                <label for="cboEstado">Estado</label>
-                                <select class="form-control form-control-sm" id="cboEstado">
-                                    <option value="1">Activo</option>
-                                    <option value="0">No Activo</option>
-                                </select>
+                                <label for="txtCompra">Compra Bs</label>
+                                <input type="number" class="form-control input-sm" id="txtCompra" name="Compra">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="txtVenta">Venta Bs</label>
+                                <input type="number" class="form-control input-sm" id="txtVenta" name="Venta">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label for="txtStock">Stock</label>
-                                    <input type="text" class="form-control input-sm model" id="txtStock" value="0" name="Stock">
-                                </div>
-                                <div class="form-group">
-                                    <label for="txtPrecio">Precio</label>
-                                    <input type="text" class="form-control input-sm model" id="txtPrecio" value="0" name="Precio">
-                                </div>
-                            </div>
-                            <div class="col-lg-8">
-                                <div class="form-group">
-                                    <label for="txtDescripcion">Descripcion</label>
-                                    <textarea class="form-control" rows="4" id="txtDescripcion"></textarea>
-                                </div>
-                            </div>
+
+                        <div class="form-group">
+                            <label for="txtDescripcion">Descripcion</label>
+                            <textarea class="form-control" rows="3" id="txtDescripcion"></textarea>
                         </div>
+
                     </div>
-                    <div class="col-lg-5">
+                    <div class="col-lg-6">
                         <div class="form-group">
                             <label for="txtApelocs">Seleccione Foto</label>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="txtFotoPror" accept="image/*">
-                                <label class="custom-file-label" for="txtFotoPror">Ningún archivo seleccionado</label>
+                                <input type="file" class="custom-file-input" id="txtImagen" accept="image/*">
+                                <label class="custom-file-label" for="txtImagen">Ningún archivo seleccionado</label>
                             </div>
                         </div>
 
                         <div class="form-group text-center">
-                            <img id="imgProd" src="https://joseluis1989-007-site1.ltempurl.com/Imagenes/sinimagen.png" alt="Foto usuario" style="height: 120px; max-width: 120px;">
+                            <img id="imgProducto" src="https://joseluis1989-007-site1.ltempurl.com/Imagenes/sinimagen.png" alt="Foto usuario" style="height: 120px; max-width: 120px;">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button id="btnGuardarPro" type="button" class="btn btn-sm btn-primary">Guardar Cambios</button>
+                <button id="btnGuardar" type="button" class="btn btn-sm btn-primary">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -146,10 +129,10 @@
     <script src="~/assets/plugins/datatables/dataTables.keyTable.min.js"></script>
     <script src="~/assets/plugins/datatables/dataTables.scroller.min.js"></script>
 
-    <!-- Responsive examples -->
+    <!-- Responsive examples <script src="~/Views/Producto/Producto.js"></script> -->
     <script src="~/assets/plugins/datatables/dataTables.responsive.min.js"></script>
     <script src="~/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
-    <script src="~/Views/Producto/Producto.js"></script>
-    <!-- <script src="~/Views/Categoria/Productoindex.js"></script> -->
+    <script src="~/assets/pluginzero/select2/select2.min.js"></script>
+    <script src="~/Views/Producto/Producto.js" asp-append-version="true"></script>
 }
 
