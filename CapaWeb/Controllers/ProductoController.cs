@@ -5,6 +5,7 @@ using CapaWeb.Utilidades.Helpers;
 using CapaWeb.Utilidades.Response;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CapaWeb.Controllers
 {
@@ -21,6 +22,7 @@ namespace CapaWeb.Controllers
             _imageHelper = imageHelper;
         }
 
+        [Authorize(Roles = "Administrador,Cajero")]
         public IActionResult Index()
         {
             return View();

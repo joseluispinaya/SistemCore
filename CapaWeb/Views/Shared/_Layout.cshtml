@@ -31,8 +31,8 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="index.html" class="logo"><span>Web</span>Admin</a>
-                    <a href="index.html" class="logo-sm"><span>W</span></a>
+                    <a href="javascript:void(0)" class="logo"><span>Web</span>Admin</a>
+                    <a href="javascript:void(0)" class="logo-sm"><span>W</span></a>
                     <!--<a href="index.html" class="logo"><img src="assets/images/logo_white_2.png" height="28"></a>-->
                     <!--<a href="index.html" class="logo-sm"><img src="assets/images/logo_sm.png" height="36"></a>-->
                 </div>
@@ -56,26 +56,7 @@
                         </li>
                     </ul>
 
-                    <ul class="nav navbar-right float-right list-inline">
-                        <li class="d-none d-sm-block">
-                            <a href="#" id="btn-fullscreen" class="waves-effect waves-light notification-icon-box"><i class="mdi mdi-fullscreen"></i></a>
-                        </li>
-
-                        <li class="dropdown">
-                            <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
-                                <img src="~/assets/images/users/avatar-1.jpg" alt="user-img" class="rounded-circle">
-                                <span class="profile-username">
-                                    Kenny Rigdon <br />
-                                    <small>Developer</small>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="javascript:void(0)" class="dropdown-item"> Lock screen</a></li>
-                                <li class="dropdown-divider"></li>
-                                <li><a href="javascript:void(0)" class="dropdown-item"> Salir</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+                    @await Component.InvokeAsync("MenuUsuario")
                 </div>
             </nav>
         </div>
@@ -84,8 +65,8 @@
 
         <div class="left side-menu">
             <div class="sidebar-inner slimscrollleft">
-
-                <div class="user-details">
+                @await Component.InvokeAsync("Menu")
+                @* <div class="user-details">
                     <div class="text-center">
                         <img src="~/assets/images/users/avatar-1.jpg" alt="" class="rounded-circle">
                     </div>
@@ -102,35 +83,42 @@
 
                         <p class="text-muted m-0"><i class="far fa-dot-circle text-primary"></i> Online</p>
                     </div>
-                </div>
+                </div> *@
                 <!--- Divider -->
 
 
                 <div id="sidebar-menu">
                     <ul>
-                        <li>
-                            <a class="waves-effect" asp-controller="Home" asp-action="Index"><i class="mdi mdi-home"></i><span> Dashboard <span class="badge badge-primary float-right">1</span></span></a>
-                        </li>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <li>
+                                <a class="waves-effect" asp-controller="Home" asp-action="Index"><i class="mdi mdi-home"></i><span> Dashboard <span class="badge badge-primary float-right">1</span></span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect" asp-controller="Producto" asp-action="Index"><i class="mdi mdi-calendar"></i><span> Productos</span></a>
+                            </li>
+                            <li class="has_sub">
+                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-album"></i> <span> Usuarios </span> <span class="float-right"><i class="mdi mdi-plus"></i></span></a>
+                                <ul class="list-unstyled">
+                                    <li><a asp-controller="Usuario" asp-action="Index">Lista</a></li>
+                                    <li><a href="javascript:void(0)">Detalle</a></li>
+                                </ul>
+                            </li>
+                        }
 
-                        <li>
-                            <a class="waves-effect" asp-controller="Producto" asp-action="Index"><i class="mdi mdi-calendar"></i><span> Productos</span></a>
-                        </li>
-
-                        <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-album"></i> <span> User Interface </span> <span class="float-right"><i class="mdi mdi-plus"></i></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="ui-buttons.html">Buttons</a></li>
-                                <li><a href="ui-cards.html">Cards</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-opacity"></i> <span> Icons </span> <span class="float-right"><i class="mdi mdi-plus"></i></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="icons-material.html">Material Design</a></li>
-                                <li><a href="icons-ion.html">Ion Icons</a></li>
-                            </ul>
-                        </li>
+                        @if (User.IsInRole("Cajero"))
+                        {
+                            <li>
+                                <a class="waves-effect" asp-controller="Producto" asp-action="Index"><i class="mdi mdi-calendar"></i><span> Productos</span></a>
+                            </li>
+                            <li class="has_sub">
+                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-opacity"></i> <span> Cajero </span> <span class="float-right"><i class="mdi mdi-plus"></i></span></a>
+                                <ul class="list-unstyled">
+                                    <li><a href="javascript:void(0)">Material Design</a></li>
+                                    <li><a href="javascript:void(0)">Ion Icons</a></li>
+                                </ul>
+                            </li>
+                        }
 
                     </ul>
                 </div>

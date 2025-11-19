@@ -7,7 +7,8 @@ const preguntaEliminar = "Desea inactivar al usuario";
 const confirmaEliminar = "El usuario fue modificado.";
 const confirmaRegistro = "Usuario registrado!";
 
-document.addEventListener("DOMContentLoaded", function (event) {
+$(function () {
+    obtenerRoles();
 
     tablaData = $('#tbData').DataTable({
         responsive: true,
@@ -17,43 +18,48 @@ document.addEventListener("DOMContentLoaded", function (event) {
             "datatype": "json"
         },
         "columns": [
-            { title: "Nro CI", "data": "nroCi", width: "100px" },
+            { "data": "idUsuario", "visible": false, "searchable": false },
+            { title: "Nro CI", "data": "nroCi" },
             { title: "Nombres", "data": "nombre" },
             { title: "Apellidos", "data": "apellido" },
             { title: "Correo", "data": "correo" },
-            {
-                title: "Rol", "data": "rolUsuario", render: function (data) {
-                    return data.nombre
-                }
-            },
+            { title: "Rol", "data": "nombreRol" },
             {
                 title: "Estado",
                 "data": "activo",
                 render: function (data) {
                     return data
-                        ? '<span class="badge bg-success">Activo</span>'
-                        : '<span class="badge bg-danger">No Activo</span>';
+                        ? '<span class="badge badge-success">Activo</span>'
+                        : '<span class="badge badge-danger">No Activo</span>';
                 }
             },
             {
-                title: "", "data": "idUsuario", width: "100px", render: function () {
-                    return `<div class="btn-group dropstart">
-                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            Acción
+                title: "Acciones",
+                data: "idUsuario",
+                width: "100px",
+                orderable: false,
+                render: function (id) {
+                    return `
+                        <button class="btn btn-primary btn-editar btn-sm mr-2" data-id="${id}">
+                            <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><button class="dropdown-item btn-editar">Editar</button></li>
-                            <li><button class="dropdown-item btn-eliminar">Eliminar</button></li>
-                        </ul>`
+                        <button class="btn btn-info btn-detalle btn-sm" data-id="${id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    `;
                 }
             }
         ],
+        order: [[0, "desc"]],
         language: {
             url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
         },
     });
 
-    fetch(`/${controlador}/ListaRoles`, {
+});
+
+function obtenerRoles() {
+    fetch(`/Usuario/ListaRoles`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json;charset=utf-8' }
     }).then(response => {
@@ -65,24 +71,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 $("#cboRolUser").append($("<option>").val(item.idRolUsuario).text(item.nombre));
             });
             $('#cboRolUser').select2({
-                theme: 'bootstrap-5',
+                //theme: 'bootstrap-5',
                 dropdownParent: $('#mdData'),
                 placeholder: "Seleccionar"
             });
         }
     }).catch((error) => {
-        Swal.fire({
-            title: "Error!",
-            text: "No se encontraron coincidencias.",
-            icon: "warning"
-        });
+        swal("Error!", "No se encontraron coincidencias.", "warning");
     })
+}
 
-});
+$('#tbData tbody').on('click', '.btn-editar', function () {
 
-$("#tbData tbody").on("click", ".btn-editar", function () {
-    const filaSeleccionada = $(this).closest('tr');
-    const data = tablaData.row(filaSeleccionada).data();
+    let fila = $(this).closest('tr');
+
+    if (fila.hasClass('child')) {
+        fila = fila.prev();
+    }
+
+    let data = tablaData.row(fila).data();
+    //console.log("Detalless:", data);
 
     idEditar = data.idUsuario;
     $("#txtNroDocumento").val(data.nroCi);
@@ -90,10 +98,23 @@ $("#tbData tbody").on("click", ".btn-editar", function () {
     $("#txtApellidos").val(data.apellido);
     $("#txtCorreo").val(data.correo);
     $("#txtClave").val(data.clave);
-    $("#cboRolUser").val(data.rolUsuario.idRolUsuario.toString()).trigger("change");
-    $(`#${modal}`).modal('show');
-})
 
+    $("#cboRolUser").val(data.idRolUsuario.toString()).trigger("change");
+
+    $("#myLargeModalLabel").text("Editar Usuario");
+    $(`#${modal}`).modal('show');
+
+});
+
+$('#tbData tbody').on('click', '.btn-detalle', function () {
+    let fila = $(this).closest('tr');
+    if (fila.hasClass('child')) fila = fila.prev();
+    let data = tablaData.row(fila).data();
+
+    swal("Mensaje", data.idUsuario, "warning");
+
+    console.log("Detalless:", data);
+});
 
 $("#btnNuevo").on("click", function () {
     idEditar = 0;
@@ -103,22 +124,36 @@ $("#btnNuevo").on("click", function () {
     $("#txtCorreo").val("");
     $("#txtClave").val("");
     $("#cboRolUser").val("").trigger('change');
+
+    $("#myLargeModalLabel").text("Registrar Usuario");
+
     $(`#${modal}`).modal('show');
 })
 
+function habilitarBoton() {
+    $('#btnGuardar').prop('disabled', false);
+}
+
 $("#btnGuardar").on("click", function () {
-    if ($("#txtNroDocumento").val().trim() == "" ||
-        $("#txtNombres").val().trim() == "" ||
-        $("#txtApellidos").val().trim() == "" ||
-        $("#txtCorreo").val() == "" ||
-        $("#txtClave").val() == "" || $("#cboRolUser").val() == ""
-    ) {
-        Swal.fire({
-            title: "Error!",
-            text: "Falta completar datos.",
-            icon: "warning"
-        });
-        return
+
+    $('#btnGuardar').prop('disabled', true);
+
+    const inputs = $("input.model").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() === "");
+
+    if (inputs_sin_valor.length > 0) {
+        const mensaje = `Debe completar el campo : "${inputs_sin_valor[0].name}"`;
+        toastr.warning("", mensaje);
+        //$(`input[name="${inputs_sin_valor[0].name}"]`).focus();
+        $(`input[name="${inputs_sin_valor[0].name}"]`).trigger("focus");
+        habilitarBoton();
+        return;
+    }
+
+    if ($("#cboRolUser").val() === "") {
+        toastr.warning("", "Debe Seleccionar un Rol");
+        habilitarBoton();
+        return;
     }
 
     const objeto = {
@@ -126,11 +161,9 @@ $("#btnGuardar").on("click", function () {
         NroCi: $("#txtNroDocumento").val().trim(),
         Nombre: $("#txtNombres").val().trim(),
         Apellido: $("#txtApellidos").val().trim(),
-        Correo: $("#txtCorreo").val(),
-        Clave: $("#txtClave").val(),
-        RolUsuario: {
-            IdRolUsuario: $("#cboRolUser").val()
-        }
+        Correo: $("#txtCorreo").val().trim(),
+        Clave: $("#txtClave").val().trim(),
+        IdRolUsuario: $("#cboRolUser").val()
     }
 
     $(`#${modal}`).find("div.modal-content").LoadingOverlay("show");
@@ -145,20 +178,20 @@ $("#btnGuardar").on("click", function () {
             .then(response => response.ok ? response.json() : Promise.reject(response))
             .then(responseJson => {
                 if (responseJson.estado) {
-                    Swal.fire({ text: responseJson.mensaje, icon: "success" });
+                    swal("Mensaje", responseJson.mensaje, "success");
                     $(`#${modal}`).modal('hide');
                     idEditar = 0;
                     tablaData.ajax.reload();
                 } else {
-                    Swal.fire({ title: "Error!", text: responseJson.mensaje, icon: "warning" });
+                    swal("Error!", responseJson.mensaje, "warning");
                 }
             })
             .catch(() => {
-                Swal.fire({ title: "Error!", text: "No se pudo editar.", icon: "warning" });
+                swal("Error!", "No se pudo editar.", "warning");
             })
             .finally(() => {
-                // finally se ejecuta siempre (success o catch)
                 $(`#${modal}`).find("div.modal-content").LoadingOverlay("hide");
+                habilitarBoton();
             });
     } else {
         fetch(`/${controlador}/Guardar`, {
@@ -169,18 +202,19 @@ $("#btnGuardar").on("click", function () {
             .then(response => response.ok ? response.json() : Promise.reject(response))
             .then(responseJson => {
                 if (responseJson.estado) {
-                    Swal.fire({ text: responseJson.mensaje, icon: "success" });
+                    swal("Mensaje", responseJson.mensaje, "success");
                     $(`#${modal}`).modal('hide');
                     tablaData.ajax.reload();
                 } else {
-                    Swal.fire({ title: "Error!", text: "Ocurrió un error.", icon: "warning" });
+                    swal("Error!", responseJson.mensaje, "warning");
                 }
             })
             .catch(() => {
-                Swal.fire({ title: "Error!", text: "No se pudo registrar.", icon: "warning" });
+                swal("Error!", "No se pudo registrar.", "warning");
             })
             .finally(() => {
                 $(`#${modal}`).find("div.modal-content").LoadingOverlay("hide");
+                habilitarBoton();
             });
     }
 });

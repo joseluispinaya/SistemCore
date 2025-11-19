@@ -1,0 +1,113 @@
+﻿
+@{
+    ViewData["Title"] = "Usuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="~/assets/plugins/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/datatables/fixedHeader.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/pluginzero/select2/select2.min.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header bg-success">
+                <h3 class="card-title m-0"><i class="fas fa-user-friends"></i> Lista de Usuarios</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <button class="btn btn-sm btn-success" id="btnNuevo"><i class="fas fa-user-plus"></i> Nuevo Registro</button>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <table class="table table-striped table-bordered nowrap" id="tbData" cellspacing="0" width="100%">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdData" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title m-0" id="myLargeModalLabel">Usuarios</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-sm-6">
+                        <label for="txtNombres">Nombres</label>
+                        <input type="text" class="form-control input-sm model" id="txtNombres" name="Nombres" autocomplete="off">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="txtApellidos">Apellidos</label>
+                        <input type="text" class="form-control input-sm model" id="txtApellidos" name="Apellidos" autocomplete="off">
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-sm-6">
+                        <label for="txtNroDocumento">Nro CI</label>
+                        <input type="text" class="form-control input-sm model" id="txtNroDocumento" name="Nro CI" autocomplete="off">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="txtCorreo">Correo</label>
+                        <input type="text" class="form-control input-sm model" id="txtCorreo" name="Correo" autocomplete="off">
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-sm-6">
+                        <label for="txtClave">Contraseña</label>
+                        <input type="text" class="form-control input-sm model" id="txtClave" name="Contraseña" autocomplete="off">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="cboRolUser">Roles</label>
+                        <select id="cboRolUser" class="form-control form-control-sm" data-width="100%"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button id="btnGuardar" type="button" class="btn btn-sm btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Required datatable js-->
+    <script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+    <script src="~/assets/plugins/datatables/jszip.min.js"></script>
+    <script src="~/assets/plugins/datatables/pdfmake.min.js"></script>
+    <script src="~/assets/plugins/datatables/vfs_fonts.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.html5.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.print.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.keyTable.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.scroller.min.js"></script>
+
+    <!-- Responsive examples <script src="~/Views/Producto/Producto.js" asp-append-version="true"></script> -->
+    <script src="~/assets/plugins/datatables/dataTables.responsive.min.js"></script>
+    <script src="~/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="~/assets/pluginzero/select2/select2.min.js"></script>
+    <script src="~/Views/Usuario/UsuarioIndex.js"></script>
+}
