@@ -51,6 +51,12 @@ namespace CapaWeb.Controllers
                 return View();
             }
 
+            if (usuario_encontrado.Activo == false)
+            {
+                ViewData["Mensaje"] = "El usuario está inactivo.";
+                return View();
+            }
+
             // Crear Claims para autenticación
             List<Claim> claims =
             [

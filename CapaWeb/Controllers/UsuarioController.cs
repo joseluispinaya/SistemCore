@@ -5,6 +5,7 @@ using CapaWeb.Utilidades.Helpers;
 using CapaWeb.Utilidades.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using CapaWeb.Models;
 
 namespace CapaWeb.Controllers
 {
@@ -113,6 +114,29 @@ namespace CapaWeb.Controllers
                 gResponse.Mensaje = respuesta
                     ? "El usuario fue actualizado correctamente."
                     : "No se pudo actualizar el usuario.";
+            }
+            catch (Exception)
+            {
+                gResponse.Estado = false;
+                gResponse.Mensaje = "Ocurrió un error inesperado.";
+            }
+
+            return StatusCode(StatusCodes.Status200OK, gResponse);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CambioEstado([FromBody] VMCambioEstado request)
+        {
+            GenericResponse<bool> gResponse = new();
+
+            try
+            {
+                bool respuesta = await _repositorio.CambioEstado(request.Id, request.Activo);
+
+                gResponse.Estado = respuesta;
+                gResponse.Mensaje = respuesta
+                    ? "Cambio realizado correctamente."
+                    : "No se pudo actualizar el Estado del usuario.";
             }
             catch (Exception)
             {

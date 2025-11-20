@@ -107,13 +107,56 @@ $('#tbData tbody').on('click', '.btn-editar', function () {
 });
 
 $('#tbData tbody').on('click', '.btn-detalle', function () {
+
     let fila = $(this).closest('tr');
     if (fila.hasClass('child')) fila = fila.prev();
     let data = tablaData.row(fila).data();
 
-    swal("Mensaje", data.idUsuario, "warning");
+    const request = {
+        Id: data.idUsuario,
+        Activo: !data.activo
+    };
 
-    console.log("Detalless:", data);
+    const textoEst = data.activo ? 'Suspender' : 'Habilitar';
+
+    swal({
+        title: "¿Mensaje Estas seguro?",
+        text: `de ${textoEst} al Usuario ${data.nombre}`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Si, Aceptar",
+        cancelButtonText: "No, Cancelar",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    }, function (isConfirm) {
+        if (isConfirm) {
+
+            $(".showSweetAlert").LoadingOverlay("show");
+
+            fetch("/Usuario/CambioEstado", {
+                method: "POST",
+                headers: { "Content-Type": "application/json;charset=utf-8" },
+                body: JSON.stringify(request)
+            })
+                .then(response => response.ok ? response.json() : Promise.reject(response))
+                .then(responseJson => {
+                    if (responseJson.estado) {
+                        swal("Mensaje", responseJson.mensaje, "success");
+                        tablaData.ajax.reload();
+                    } else {
+                        swal("Error!", responseJson.mensaje, "warning");
+                    }
+                })
+                .catch(() => {
+                    swal("Error!", "Ocurrio un error intente mas tarde.", "warning");
+                })
+                .finally(() => {
+                    $(".showSweetAlert").LoadingOverlay("hide");
+                });
+
+        }
+    });
 });
 
 $("#btnNuevo").on("click", function () {
