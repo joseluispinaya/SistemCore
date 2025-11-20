@@ -22,7 +22,7 @@ namespace CapaEntidades
             ? ImagenPro 
             : "https://localhost:7111/images/sinimagen.png";
 
-        //public string ImageFull => !string.IsNullOrEmpty(ImagenPro) ? ImagenPro : "https://localhost:7111/images/sinimagen.png";
+        //public string ImageFull => !string.IsNullOrEmpty(image) ? ImagenPro : "https://localhost:7111/images/sinimagen.png";
         //public string ImageFull => string.IsNullOrEmpty(ImagenPro) ? "/images/sinimagen.png" : ImagenPro;
     }
 }
