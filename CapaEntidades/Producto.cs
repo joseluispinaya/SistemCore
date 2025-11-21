@@ -17,10 +17,10 @@ namespace CapaEntidades
         public Categoria? Categoria { get; set; }
         public int Cantidad { get; set; }
         public bool? Activo { get; set; }
-        public string ImageFull => 
-            !string.IsNullOrEmpty(ImagenPro) 
-            ? ImagenPro 
-            : "https://localhost:7111/images/sinimagen.png";
+        //public string ImageFull => 
+        //    !string.IsNullOrEmpty(ImagenPro) 
+        //    ? ImagenPro 
+        //    : "https://localhost:7111/images/sinimagen.png";
 
         //public string ImageFull => !string.IsNullOrEmpty(image) ? ImagenPro : "https://localhost:7111/images/sinimagen.png";
         //public string ImageFull => string.IsNullOrEmpty(ImagenPro) ? "/images/sinimagen.png" : ImagenPro;

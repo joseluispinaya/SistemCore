@@ -1,5 +1,8 @@
-﻿using CapaData.Interfaaces;
+﻿using CapaApi.Models;
+using CapaData.Interfaaces;
+using CapaEntidades;
 using CapaEntidades.DTO;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +23,15 @@ namespace CapaApi.Controllers
         public async Task<IActionResult> Lista()
         {
             List<ProductoListDTO> lista = await _repositorio.ListaProducDto();
-            return StatusCode(StatusCodes.Status200OK, lista);
+            return Ok(lista);
         }
 
         [HttpGet("combo")]
         public async Task<IActionResult> GetComboAsync()
         {
-            List<ProductoListDTO> lista = await _repositorio.ListaProducDto();
-            return Ok(lista);
+            var productos = await _repositorio.Lista();
+            var result = productos.Adapt<List<VMProductoList>>();
+            return Ok(result);
         }
 
     }
