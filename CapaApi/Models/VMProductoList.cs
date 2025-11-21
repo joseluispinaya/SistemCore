@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CapaEntidades.DTO
+﻿namespace CapaApi.Models
 {
-    public class ProductoListDTO
+    public class VMProductoList
     {
         public int IdProducto { get; set; }
         public string? ImagenPro { get; set; }
-        public string Nombre { get; set; } = null!;
+        public string? Nombre { get; set; }
         public string? Descripcion { get; set; }
         public decimal PrecioCompra { get; set; }
         public decimal PrecioVenta { get; set; }
@@ -18,10 +12,10 @@ namespace CapaEntidades.DTO
         public bool? Activo { get; set; }
 
         public int IdCategoria { get; set; }
-        public string NombreCategoria { get; set; } = null!;
+        public string? NombreCategoria { get; set; }
         public string ImageFull =>
             !string.IsNullOrEmpty(ImagenPro)
             ? ImagenPro
-            : "https://localhost:7111/images/sinimagen.png";
+            : "https://joseluis1989-007-site1.ltempurl.com/Imagenes/sinimagen.png";
     }
 }
