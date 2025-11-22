@@ -4,6 +4,8 @@ using CapaData.Interfaaces;
 using CapaWeb.Utilidades.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +20,29 @@ builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 //builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(option =>
+builder.Services.AddAuthentication(options =>
+{
+    // Mantener cookies como esquema por defecto (para MVC)
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(option =>
+{
+    option.LoginPath = "/Acceso/Login";
+    option.AccessDeniedPath = "/Acceso/Denegado";
+    option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+})
+.AddJwtBearer("JwtScheme", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        option.LoginPath = "/Acceso/Login";
-        option.AccessDeniedPath = "/Acceso/Denegado";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-    });
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtKey"]!))
+    };
+});
 
 builder.Services.AddControllersWithViews(options => {
     options.Filters.Add(

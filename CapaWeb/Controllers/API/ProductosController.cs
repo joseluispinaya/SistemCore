@@ -1,11 +1,13 @@
 ﻿using CapaData.Interfaaces;
 using CapaEntidades.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CapaWeb.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "JwtScheme")]
     public class ProductosController : ControllerBase
     {
         private readonly IProductoRepositorio _repositorio;
