@@ -152,6 +152,38 @@ namespace CapaData.Implementacion
             return lista;
         }
 
+        public async Task<UserResponseDTO?> Logeo(string Correo, string Clave)
+        {
+            UserResponseDTO? objeto = null;
+
+            using var conexion = new SqlConnection(con.CadenaSQL);
+            await conexion.OpenAsync();
+
+            using var cmd = new SqlCommand("usp_loginUsuario", conexion)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@Correo", Correo);
+            cmd.Parameters.AddWithValue("@Clave", Clave);
+
+            using var dr = await cmd.ExecuteReaderAsync();
+            if (await dr.ReadAsync())
+            {
+                objeto = new UserResponseDTO()
+                {
+                    IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
+                    NroCi = dr["NroCi"].ToString()!,
+                    Nombre = dr["Nombre"].ToString()!,
+                    Apellido = dr["Apellido"].ToString()!,
+                    Correo = dr["Correo"].ToString()!,
+                    Activo = Convert.ToBoolean(dr["Activo"]),
+                    NombreRol = dr["NombreRol"].ToString()!
+                };
+            }
+
+            return objeto;
+        }
+
         public async Task<Usuario?> LoginNuevo(string correo, string clave)
         {
             Usuario? objeto = null;

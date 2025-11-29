@@ -22,6 +22,9 @@ namespace CapaEntidades.DTO
         public string ImageFull =>
             !string.IsNullOrEmpty(ImagenPro)
             ? ImagenPro
-            : "https://localhost:7111/images/sinimagen.png";
+            : "/images/sinimagen.png";
+
+        //"https://localhost:7111/images/sinimagen.png";
+        //public string ImageFull => string.IsNullOrEmpty(ImagenPro) ? "/images/sinimagen.png" : ImagenPro;
     }
 }

@@ -21,7 +21,7 @@ namespace CapaWeb.Controllers.API
             _configuration = configuration;
         }
 
-        [HttpPost]
+        [HttpPost("CrearToken")]
         public async Task<IActionResult> CrearToken([FromBody] LoginDTO modelo)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -51,6 +51,41 @@ namespace CapaWeb.Controllers.API
             return Ok(new
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token)
+            });
+        }
+
+        [HttpPost("LogeoApp")]
+        public async Task<IActionResult> LogeoApp([FromBody] LoginDTO modelo)
+        {
+            if (!ModelState.IsValid) return BadRequest(new { message = "Debe completar todos los campos." });
+
+            var usuarioResp = await _repositorio.Logeo(modelo.Correo, modelo.Clave);
+
+            if (usuarioResp == null)
+                return BadRequest(new { message = "Correo o clave incorrectos." });
+
+            if (!usuarioResp.Activo)
+                return BadRequest(new { message = "El usuario está inactivo." });
+
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, usuarioResp.IdUsuario.ToString()),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwtKey"]!));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(30),
+                signingCredentials: credentials
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                usuarioResp
             });
         }
 

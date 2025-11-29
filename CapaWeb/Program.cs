@@ -20,6 +20,16 @@ builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 //builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPermitido", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddAuthentication(options =>
 {
     // Mantener cookies como esquema por defecto (para MVC)
@@ -68,6 +78,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("CorsPermitido");
 
 app.UseAuthentication();
 app.UseAuthorization();

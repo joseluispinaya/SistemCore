@@ -15,7 +15,8 @@ namespace CapaData.Interfaaces
         Task<bool> Guardar(Usuario objeto);
         Task<bool> Editar(Usuario objeto);
         Task<bool> CambioEstado(int Id, bool Activo);
+        Task<UserResponseDTO?> Logeo(string Correo, string Clave);
 
-        //Task<List<UsuarioListDTO>> Lista();
+        //Task<UserResponseDTO?> Logeo(string Correo, string Clave);
     }
 }
